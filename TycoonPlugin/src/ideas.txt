@@ -1,0 +1,9 @@
+Ideen:
+ - Economy System
+ - Discord Bot
+ - Gamble Plugin
+ - Store (Sales for buying gens)
+ - Multipliers, Sell Wand
+ - Essentials Grundfunktionen	
+ - Ban System
+ 
