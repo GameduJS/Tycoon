@@ -1,4 +1,4 @@
-package de.tycoon.utils;
+package de.tycoon.util;
 
 import java.io.File;
 import java.io.IOException;

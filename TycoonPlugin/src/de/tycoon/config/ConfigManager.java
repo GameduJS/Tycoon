@@ -53,6 +53,9 @@ public class ConfigManager {
 	private void initGeneratorConfigSetup() {
 		
 		/* Loop through each configuration in list and check if it's "empty" */
+		
+		if(this.generatorConfigs.isEmpty()) return;
+		
 		this.generatorConfigs.forEach(config -> {
 			
 			/**

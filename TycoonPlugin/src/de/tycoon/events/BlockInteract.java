@@ -1,8 +1,12 @@
 package de.tycoon.events;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -13,7 +17,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,7 +28,7 @@ import de.tycoon.generators.GeneratorUpgradManager;
 import de.tycoon.generators.generator.Generator;
 import de.tycoon.generators.generator.GeneratorBlock;
 
-public class BlockPlace implements Listener{
+public class BlockInteract implements Listener{
 
 	private TycoonPlugin plugin;
 	
@@ -33,18 +36,22 @@ public class BlockPlace implements Listener{
 	private ConfigManager configManager;
 	private GeneratorUpgradManager generatorUpgradManager;
 	
-	 public BlockPlace() {
+	private Map<UUID, Long> cooldown;
+	
+	 public BlockInteract() {
 
 		 this.plugin = TycoonPlugin.get();
 		 this.genManager = this.plugin.getGeneratorManager();
 		 this.configManager = this.plugin.getConfigManager();
 		 this.generatorUpgradManager = new GeneratorUpgradManager();
+		 this.cooldown = new HashMap<>();
 	 }
 	
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e) {
 		Player player = e.getPlayer();
 		
+		/* Check if Block is Generator */
 		if(player.getInventory().getItemInMainHand() == null) return;
 		ItemStack item = player.getInventory().getItemInMainHand();
 		
@@ -53,11 +60,13 @@ public class BlockPlace implements Listener{
 		if(!item.getItemMeta().hasLore()) return;
 		if(item.getItemMeta().getLore().size() == 0) return;
 		if(!item.getItemMeta().getLore().contains(ChatColor.translateAlternateColorCodes('&', "&7A powerful and unlimited source!"))) return;
+		/** ;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;**/
 		
 		Generator gen = null;
+
+		/* Assign generator */
 		String name = ChatColor.stripColor(item.getItemMeta().getDisplayName());
 		int tier = Integer.valueOf(name.split(" ")[name.split(" ").length - 1]);
-		
 		
 		Config config = this.configManager.getConfigutationByTier(tier);
 		String genName = config.getString("Generator.Name");
@@ -65,8 +74,9 @@ public class BlockPlace implements Listener{
 		
 		Material genMaterial = Material.valueOf(config.getString("Generator.Block"));
 		Material dropMaterial = Material.valueOf(config.getString("Generator.Drop.Material"));
-
+		/** ;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;**/
 		
+		/* Add generator to player */
 		gen = new Generator(name, tier, dropMaterial, new GeneratorBlock(e.getBlock().getLocation(), genMaterial, genName, genLores));
 		this.genManager.addGenerator(player.getUniqueId(), gen);
 		
@@ -77,11 +87,13 @@ public class BlockPlace implements Listener{
 		
 		Player player = e.getPlayer();
 		
+		/* Check if breaking block is a generator */
 		if(this.genManager.getGenerators(player.getUniqueId()) == null) return;
 		
 		Location location = e.getBlock().getLocation();
 		List<Generator> generatorsOfPlayers = this.genManager.getGenerators(player.getUniqueId());
 		
+		/** Check a bypass permission **/
 		
 		for(Generator gens : generatorsOfPlayers) {
 			if(gens.getBlock().getLocation().equals(location)) {
@@ -129,13 +141,17 @@ public class BlockPlace implements Listener{
 		
 		if(genToUpgrade == null) return;
 		
-		
-		
-		int status = this.generatorUpgradManager.upgrade(genToUpgrade, player.getUniqueId());
-		
-		if(status == -1) {
-			player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-			player.sendMessage("§7You have upgraded your generator!");
+		if(cooldown.containsKey(player.getUniqueId()) && cooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
+			
+			int status = this.generatorUpgradManager.upgrade(genToUpgrade, player.getUniqueId());
+			
+			if(status == -1) {
+				player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+				player.sendMessage("§7You have upgraded your generator!");
+			}
+			
+		} else {
+			cooldown.put(player.getUniqueId(), System.currentTimeMillis() + 20);
 		}
 		
 		

@@ -9,14 +9,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tycoon.commands.EconomyCommand;
 import de.tycoon.commands.GetGeneratorCommand;
+import de.tycoon.commands.SellCommand;
 import de.tycoon.config.ConfigManager;
 import de.tycoon.discord.DiscordBot;
 import de.tycoon.economy.UserManager;
-import de.tycoon.events.BlockPlace;
+import de.tycoon.events.BlockInteract;
 import de.tycoon.generators.GeneratorConfigManager;
 import de.tycoon.generators.GeneratorManager;
-import de.tycoon.generators.generator.IBaseGenerator;
-import de.tycoon.thread.Threads;
+import de.tycoon.threads.Threads;
 
 public class TycoonPlugin extends JavaPlugin{
 
@@ -47,7 +47,7 @@ public class TycoonPlugin extends JavaPlugin{
 		this.generatorConfigManager.loadGenerators();
 
 		this.userManager = new UserManager();
-//		this.userManager.loadPlayersBalances();
+		this.userManager.loadPlayersBalances();
 		
 		this.discordBot = new DiscordBot();
 		this.startDiscordBot();
@@ -76,31 +76,29 @@ public class TycoonPlugin extends JavaPlugin{
 	
 	@Override
 	public void onDisable() {
-		
+//		
+		this.generatorConfigManager.saveGenerators();
+		this.userManager.savePlayerBalance();
+
 		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Disbling Tycoon Plugin");
 		
-		this.generatorConfigManager.saveGenerators();
-//		this.userManager.savePlayerBalance();
 		
 	}
 	
 	private void startDiscordBot() {
-		try {
-			this.discordBot.start();
-		} catch (LoginException e) {
-			e.printStackTrace();
-		}
+		this.discordBot.start();
 	}
 	
 	private void registerEvents() {
 		
-		this.pluginManager.registerEvents(new BlockPlace(), this);
+		this.pluginManager.registerEvents(new BlockInteract(), this);
 		
 	}
 
 	private void registerCommands() {
 		this.getCommand("getgen").setExecutor(new GetGeneratorCommand());
-		this.getCommand("bal").setExecutor(new EconomyCommand());
+		this.getCommand("eco").setExecutor(new EconomyCommand());
+		this.getCommand("sell").setExecutor(new SellCommand());
 	}
 
 

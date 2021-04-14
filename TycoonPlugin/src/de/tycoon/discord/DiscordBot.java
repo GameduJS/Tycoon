@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import javax.security.auth.login.LoginException;
 
+import org.bukkit.Bukkit;
+
 import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
@@ -13,7 +15,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Activity.ActivityType;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
@@ -54,14 +55,17 @@ public class DiscordBot {
 	}
 	
 	
-	public void start() throws LoginException {
+	public void start() {
 		this.token = this.discordConfig.getString("Bot.Token");
 		
-		if(this.token == null)
-			throw new LoginException("Invalid token for " + this.token);
-		
+		if(this.token == null) {
+			Bukkit.getLogger().warning("Shutdown Discordbot - Null token");
+			Bukkit.getLogger().warning("Shutdown Discordbot - Null token");
+			Bukkit.getLogger().warning("Shutdown Discordbot - Null token");
+		}
+			
 		JDABuilder builder = JDABuilder.createDefault(token);
-		builder.setActivity(Activity.of(Activity.ActivityType.valueOf((String) this.discordConfig.getString("Bot.Activity.ActivityType")), this.discordConfig.getString("Bot.Activity.Value")));
+		builder.setActivity(Activity.of(Activity.ActivityType.valueOf(this.discordConfig.getString("Bot.Activity.ActivityType")), this.discordConfig.getString("Bot.Activity.Value")));
 		builder.setStatus(OnlineStatus.valueOf(this.discordConfig.getString("Bot.OnlineStatus")));
 		
 		/** Enable Intents **/
@@ -71,7 +75,13 @@ public class DiscordBot {
 		this.events.stream().filter(Objects::nonNull).forEach(builder::addEventListeners);
 		
 		/** Build the bot **/
-		this.jda = builder.build();
+		try {
+			this.jda = builder.build();
+		} catch (LoginException e) {
+			Bukkit.getLogger().warning("Error this is not a valid Discordbot Token!");
+			Bukkit.getLogger().warning("Error this is not a valid Discordbot Token!");
+			Bukkit.getLogger().warning("Error this is not a valid Discordbot Token!");
+		}
 	}
 	
 	

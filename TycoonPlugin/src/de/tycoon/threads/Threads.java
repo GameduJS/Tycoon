@@ -1,4 +1,4 @@
-package de.tycoon.thread;
+package de.tycoon.threads;
 
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;

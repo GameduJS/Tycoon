@@ -5,6 +5,7 @@ version: 1.0
 
 commands:
   getgen:
-  bal:
-    aliases: [money]
+  eco:
+    aliases: [bal, money]
+  sell:
   

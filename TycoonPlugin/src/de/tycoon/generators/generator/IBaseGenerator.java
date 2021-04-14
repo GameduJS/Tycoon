@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
-import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
 
 public abstract class IBaseGenerator {

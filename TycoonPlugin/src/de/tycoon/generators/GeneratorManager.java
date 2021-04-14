@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
-
 import de.tycoon.generators.generator.Generator;
 
 public class GeneratorManager {

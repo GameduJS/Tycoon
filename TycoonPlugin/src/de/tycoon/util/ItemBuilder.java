@@ -1,4 +1,4 @@
-package de.tycoon.utils;
+package de.tycoon.util;
 
 import java.util.ArrayList;
 import java.util.List;

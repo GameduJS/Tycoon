@@ -27,13 +27,14 @@ public class Config {
 		}
 		
 		File basePath = new File(folderPath);
-		File configFile = new File(basePath, fileName);
 		
 		/* Create folder if not exists */
 		if(!basePath.exists()) {
-			basePath.mkdir();
+			basePath.mkdirs();
 		}
 		
+		File configFile = new File(basePath, fileName);
+
 		/* Create file if not exists */
 		if(!configFile.exists()) {
 			try {
@@ -77,6 +78,13 @@ public class Config {
 		if(!contains(path))
 			return (Boolean) null;
 		return this.configuration.getBoolean(path);
+	}
+	
+	@SuppressWarnings("null")
+	public double getDouble(String path) {
+		if(!contains(path))
+			return (Double) null;
+		return this.configuration.getDouble(path);
 	}
 	
 	public List<String> getStringList(String path) {

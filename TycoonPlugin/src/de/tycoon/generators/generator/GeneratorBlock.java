@@ -1,6 +1,5 @@
 package de.tycoon.generators.generator;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Location;

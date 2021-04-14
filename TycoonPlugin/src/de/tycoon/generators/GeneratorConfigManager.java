@@ -14,7 +14,7 @@ import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
 import de.tycoon.generators.generator.Generator;
 import de.tycoon.generators.generator.GeneratorBlock;
-import de.tycoon.utils.FileUtils;
+import de.tycoon.util.FileUtils;
 
 public class GeneratorConfigManager {
 

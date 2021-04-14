@@ -25,15 +25,27 @@ public class EconomyCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		if(label.equalsIgnoreCase("bal")) {
+		if(label.equalsIgnoreCase("bal") || label.equalsIgnoreCase("money")) {
 			
 			if(!(sender instanceof Player)) return true;
-			
 			Player player = (Player) sender;
-			
-			User user = this.userManager.loadUser(player.getUniqueId());
+			User user = this.userManager.loadUser(player);
 
-			player.sendMessage(user.getBalance().getBal() + "");
+			player.sendMessage("" + user.getBalance());
+			
+		}
+		
+		if(label.equalsIgnoreCase("eco")) {
+			
+			if (args[0].equalsIgnoreCase("add")) {
+				
+				Player player = (Player) sender;
+				User user = this.userManager.loadUser(player);
+				
+				user.addMoney(1d);
+				player.sendMessage("Added money!");
+				
+			}
 			
 		}
 		
