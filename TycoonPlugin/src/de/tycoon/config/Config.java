@@ -15,6 +15,7 @@ public class Config {
 	public static final String ECONOMY_USER_CHACHE_PATH = "./plugins/Tycoon/Economy";
 	public static final String DISCORD_SETTING_PATH = "./plugins/Tycoon/DiscordSettings";
 	public static final String GENERATOR_CHACHE_PATH = "./plugins/Tycoon/GeneratorChache";
+	public static final String MESSAGES_PATH = "./plugins/Tycoon/Messages";
 	
 	private File file;
 	private YamlConfiguration configuration;

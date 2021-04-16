@@ -23,10 +23,14 @@ import org.bukkit.inventory.ItemStack;
 import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
+import de.tycoon.economy.User;
+import de.tycoon.economy.UserManager;
 import de.tycoon.generators.GeneratorManager;
 import de.tycoon.generators.GeneratorUpgradManager;
 import de.tycoon.generators.generator.Generator;
 import de.tycoon.generators.generator.GeneratorBlock;
+import de.tycoon.language.LanguageMessageUtils;
+import de.tycoon.language.Messages;
 
 public class BlockInteract implements Listener{
 
@@ -35,6 +39,8 @@ public class BlockInteract implements Listener{
 	private GeneratorManager genManager;
 	private ConfigManager configManager;
 	private GeneratorUpgradManager generatorUpgradManager;
+	private UserManager userManager;
+	private LanguageMessageUtils messageUtils;
 	
 	private Map<UUID, Long> cooldown;
 	
@@ -44,6 +50,8 @@ public class BlockInteract implements Listener{
 		 this.genManager = this.plugin.getGeneratorManager();
 		 this.configManager = this.plugin.getConfigManager();
 		 this.generatorUpgradManager = new GeneratorUpgradManager();
+		 this.userManager = this.plugin.getUserManager();
+		 this.messageUtils = new LanguageMessageUtils(Messages.PREFIX.getMessage());
 		 this.cooldown = new HashMap<>();
 	 }
 	
@@ -96,6 +104,9 @@ public class BlockInteract implements Listener{
 		/** Check a bypass permission **/
 		
 		for(Generator gens : generatorsOfPlayers) {
+			
+			if(player.getGameMode() == GameMode.CREATIVE) return;
+			
 			if(gens.getBlock().getLocation().equals(location)) {
 				e.setCancelled(true);
 				break;
@@ -142,12 +153,21 @@ public class BlockInteract implements Listener{
 		if(genToUpgrade == null) return;
 		
 		if(cooldown.containsKey(player.getUniqueId()) && cooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
+
+			User user = this.userManager.loadUser(player);
+			int upgradePrice = this.configManager.getConfigutationByTier(genToUpgrade.getGeneratorLevel()).getInt("Generator.UpgradePrice");
+			
+			if(upgradePrice > user.getBalance()) {
+				player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_NOT_ENOUGH_MONEY).replace("%more_money%", upgradePrice - user.getBalance() + ""));
+				return;
+			}
 			
 			int status = this.generatorUpgradManager.upgrade(genToUpgrade, player.getUniqueId());
 			
 			if(status == -1) {
 				player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-				player.sendMessage("§7You have upgraded your generator!");
+				player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_UPGRADE));
+				user.removeMoney(upgradePrice);
 			}
 			
 		} else {
@@ -182,6 +202,7 @@ public class BlockInteract implements Listener{
 		this.genManager.removeGenerator(player.getUniqueId(), genToRemove);
 		genToRemove.getBlock().getLocation().getBlock().setType(Material.AIR);
 		player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
+		player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_REMOVE));
 		player.getInventory().addItem(genToRemove.getGeneratorItem(this.configManager));
 		
 	}

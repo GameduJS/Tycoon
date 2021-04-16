@@ -1,5 +1,6 @@
 de\tycoon\util\FileUtils.class
 de\tycoon\generators\GeneratorConfigManager$1.class
+de\tycoon\language\LanguageMessageUtils.class
 de\tycoon\util\PlayerUtils.class
 de\tycoon\generators\GeneratorUpgradManager.class
 de\tycoon\generators\GeneratorConfigManager.class
@@ -10,12 +11,15 @@ de\tycoon\commands\GetGeneratorCommand.class
 de\tycoon\handlers\SellHandler.class
 de\tycoon\threads\Threads$1.class
 de\tycoon\commands\SellCommand.class
+de\tycoon\language\LanguageHandler.class
 de\tycoon\config\ConfigManager.class
 de\tycoon\generators\generator\Generator.class
 de\tycoon\generators\generator\IBaseGenerator.class
+de\tycoon\language\LanguageRegisterCommand.class
 de\tycoon\economy\User.class
 de\tycoon\generators\GeneratorManager.class
 de\tycoon\util\ItemBuilder.class
+de\tycoon\language\Messages.class
 de\tycoon\economy\UserManager$1.class
 de\tycoon\config\Config.class
 de\tycoon\economy\IUser.class

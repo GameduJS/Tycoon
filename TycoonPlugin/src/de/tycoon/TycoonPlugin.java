@@ -16,6 +16,7 @@ import de.tycoon.economy.UserManager;
 import de.tycoon.events.BlockInteract;
 import de.tycoon.generators.GeneratorConfigManager;
 import de.tycoon.generators.GeneratorManager;
+import de.tycoon.language.LanguageHandler;
 import de.tycoon.threads.Threads;
 
 public class TycoonPlugin extends JavaPlugin{
@@ -28,6 +29,7 @@ public class TycoonPlugin extends JavaPlugin{
 	private DiscordBot discordBot;
 	private UserManager userManager;
 	private GeneratorConfigManager generatorConfigManager;
+	private LanguageHandler languageHandler;
 	
 	private Threads threads;
 	
@@ -45,6 +47,8 @@ public class TycoonPlugin extends JavaPlugin{
 		
 		this.generatorConfigManager = new GeneratorConfigManager();
 		this.generatorConfigManager.loadGenerators();
+		
+		this.languageHandler = new LanguageHandler();
 
 		this.userManager = new UserManager();
 		this.userManager.loadPlayersBalances();

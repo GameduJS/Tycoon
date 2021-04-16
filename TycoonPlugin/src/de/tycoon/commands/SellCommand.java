@@ -13,9 +13,12 @@ import org.bukkit.entity.Player;
 import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
+import de.tycoon.economy.User;
 import de.tycoon.economy.UserManager;
 import de.tycoon.generators.GeneratorManager;
 import de.tycoon.handlers.SellHandler;
+import de.tycoon.language.LanguageMessageUtils;
+import de.tycoon.language.Messages;
 
 public class SellCommand implements CommandExecutor{
 
@@ -24,6 +27,7 @@ public class SellCommand implements CommandExecutor{
 	private GeneratorManager generatorManager;
 	private UserManager userManager;
 	private SellHandler sellHandler;
+	private LanguageMessageUtils messageUtils;
 	
 	private Map<Material, Double> sellPrices;
 	
@@ -34,6 +38,7 @@ public class SellCommand implements CommandExecutor{
 		this.generatorManager = this.plugin.getGeneratorManager();
 		this.userManager = this.plugin.getUserManager();
 		this.sellHandler = new SellHandler();
+		this.messageUtils = new LanguageMessageUtils(Messages.PREFIX.getMessage());
 		this.sellPrices = new HashMap<>();
 		this.initPrices();
 	}
@@ -57,8 +62,8 @@ public class SellCommand implements CommandExecutor{
 //		player.sendMessage("You have " + sellHandler.getAmount(player.getInventory(), Material.HONEYCOMB) + " honeycombs");
 //		this.sellHandler.removeItems(player.getInventory(), Material.HONEYCOMB);
 		
-		int amount = 0;
-		int payout = 0;
+		double amount = 0;
+		double payout = 0;
 		
 		for(Material material : this.sellPrices.keySet()) {
 			
@@ -70,8 +75,11 @@ public class SellCommand implements CommandExecutor{
 			
 		}
 		
+		User user = this.userManager.loadUser(player);
+		
 		if(amount != 0) {
-			player.sendMessage("You would get " + new DecimalFormat("#,###.#").format( payout ) + "€");
+			user.addMoney(payout);
+			player.sendMessage(this.messageUtils.get(player, Messages.ECONOMY_SELL).replace("%money%", new DecimalFormat("#,###.#").format( payout )));
 		}
 		
 		return false;

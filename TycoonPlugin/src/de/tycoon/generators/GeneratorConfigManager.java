@@ -50,6 +50,8 @@ public class GeneratorConfigManager {
 			
 			Config config = new Config(Config.GENERATOR_CHACHE_PATH, userFilesName[i]);
 			
+			if(!config.contains("Generators")) continue;
+			
 			for(String key : config.getConfigurationSection("Generators").getKeys(false)) {
 				
 				Config configTier = this.configManager.getConfigutationByTier(

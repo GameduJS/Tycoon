@@ -61,10 +61,12 @@ public class UserManager {
 
 		
 		if(this.userData.isEmpty()) return;
+		if(this.userData.keySet().isEmpty()) return;
 		
 		this.userData.keySet().forEach(uuid -> {
 			
 			Config config = new Config(Config.ECONOMY_USER_CHACHE_PATH, uuid.toString());
+			
 			config.set(uuid.toString() + ".Money", Math.round(this.userData.get(uuid).getBalance() * 100d) / 100d);
 			config.set(uuid.toString() + ".Tokens", this.userData.get(uuid).getTokens());
 			
