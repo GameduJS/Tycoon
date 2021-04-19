@@ -25,7 +25,7 @@ public class ConfigManager {
 	public ConfigManager() {
 		this.plugin = TycoonPlugin.get();
 		this.settingConfig = new Config(Config.SETTING_PATH, "Settings");
-		this.discordConfig = new Config(Config.DISCORD_SETTING_PATH, "Bot");
+		this.discordConfig = new Config(Config.DISCORD_PATH, "Bot");
 		this.generatorConfigs = new ArrayList<>();
 		
 		this.generatorConfigListSetup();
@@ -71,6 +71,7 @@ public class ConfigManager {
 					Material materialToDrop = null;
 					int upgradePrice = 0;
 					int dropPrice = 0;
+					double xpToDrop;
 					
 					switch(i) {
 					case 1: {
@@ -79,6 +80,7 @@ public class ConfigManager {
 						
 						upgradePrice = 500;
 						dropPrice = 5;
+						xpToDrop = 5;
 						break;
 					}
 					case 2: {
@@ -87,6 +89,7 @@ public class ConfigManager {
 						
 						upgradePrice = 2000;
 						dropPrice = 15;
+						xpToDrop = 7;
 						break;
 					}
 					case 3: {
@@ -95,6 +98,7 @@ public class ConfigManager {
 						
 						upgradePrice = 10000;
 						dropPrice = 30;
+						xpToDrop = 10;
 						break;
 					}
 					case 4: {
@@ -103,6 +107,7 @@ public class ConfigManager {
 						
 						upgradePrice = 100000;
 						dropPrice = 50;
+						xpToDrop = 12;
 						break;
 					}
 					case 5: {
@@ -111,6 +116,7 @@ public class ConfigManager {
 						
 						upgradePrice = 200000;
 						dropPrice = 100;
+						xpToDrop = 15;
 						break;
 					}
 					case 6: {
@@ -119,6 +125,7 @@ public class ConfigManager {
 						
 						upgradePrice = 500000;
 						dropPrice = 250;
+						xpToDrop = 17;
 						break;
 					}
 					case 7: {
@@ -127,6 +134,7 @@ public class ConfigManager {
 						
 						upgradePrice = 750000;
 						dropPrice = 350;
+						xpToDrop = 20;
 						break;
 					}
 					case 8: {
@@ -135,6 +143,7 @@ public class ConfigManager {
 						
 						upgradePrice = 1000000;
 						dropPrice = 500;
+						xpToDrop = 22;
 						break;
 					}
 					case 9: {
@@ -143,6 +152,7 @@ public class ConfigManager {
 						
 						upgradePrice = 2000000;
 						dropPrice = 1000;
+						xpToDrop = 25;
 						break;
 					}
 					case 10: {
@@ -151,6 +161,7 @@ public class ConfigManager {
 						
 						upgradePrice = 5000000;
 						dropPrice = 2000;
+						xpToDrop = 27;
 						break;
 					}
 					case 11: {
@@ -159,6 +170,7 @@ public class ConfigManager {
 						
 						upgradePrice = 10000000;
 						dropPrice = 5000;
+						xpToDrop = 30;
 						break;
 					}
 					case 12: {
@@ -167,6 +179,7 @@ public class ConfigManager {
 						
 						upgradePrice = 15000000;
 						dropPrice = 7500;
+						xpToDrop = 32;
 						break;
 					}
 					case 13: {
@@ -175,6 +188,7 @@ public class ConfigManager {
 						
 						upgradePrice = 25000000;
 						dropPrice = 10000;
+						xpToDrop = 35;
 						break;
 					}
 					case 14: {
@@ -183,6 +197,7 @@ public class ConfigManager {
 						
 						upgradePrice = 50000000;
 						dropPrice = 15000;
+						xpToDrop = 37;
 						break;
 					}
 					case 15: {
@@ -191,6 +206,7 @@ public class ConfigManager {
 						
 						upgradePrice = 100000000;
 						dropPrice = 25000;
+						xpToDrop = 40;
 						break;
 					}
 					default: {
@@ -199,6 +215,7 @@ public class ConfigManager {
 						
 						upgradePrice = 0;
 						dropPrice = 0;
+						xpToDrop = 0;
 						break;
 					}
 					}
@@ -212,6 +229,7 @@ public class ConfigManager {
 					
 					config.set("Generator.Drop.Material", materialToDrop.toString());
 					config.set("Generator.Drop.Price", dropPrice);
+					config.set("Generator.Drop.XP", xpToDrop);
 				
 			}
 			
@@ -227,6 +245,10 @@ public class ConfigManager {
 			this.settingConfig.set("Generators.Scheduler-Time", 15);
 			this.settingConfig.set("Generators.Generator-Limit", 20);
 			this.settingConfig.set("Generators.Max-Tiers", 15);
+		}
+		
+		if(!this.settingConfig.contains("Discord")) {			
+			this.settingConfig.set("Discord.Bot-Enabled", true);
 		}
 		
 	}

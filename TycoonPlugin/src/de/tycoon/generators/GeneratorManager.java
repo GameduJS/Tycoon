@@ -8,31 +8,55 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
+import de.tycoon.config.Config;
 import de.tycoon.generators.generator.Generator;
 
 public class GeneratorManager {
 
-	public Map<UUID, List<Generator>> generators;
+	private Map<UUID, List<Generator>> generators;
+	private Map<UUID, Integer> generatorCount;
+	private Config config;
+	private int max_gens;
 	
 	public GeneratorManager() {
 		this.generators = new HashMap<>();
+		this.generatorCount = new HashMap<>();
+		
+		this.config = new Config(Config.SETTING_PATH, "Settings");
+		max_gens = this.config.getInt("Generators.Generator-Limit");
 	}
 	
 	public void addGenerator(UUID uuid, Generator gen) {
 		List<Generator> gens = this.generators.getOrDefault(uuid, new ArrayList<>());
 		gens.add(gen);
 		this.generators.put(uuid, gens);
+		this.generatorCount.put(uuid, this.generatorCount.getOrDefault(uuid, 0) + 1);
 	}
 	
 	public void removeGenerator(UUID uuid, Generator generator) {
 		List<Generator> gens = this.generators.getOrDefault(uuid, new ArrayList<>());
 		gens.remove(generator);
 		this.generators.put(uuid, gens);
+		this.generatorCount.put(uuid, this.generatorCount.getOrDefault(uuid, 0) - 1);
 	}
 	
 	public List<Generator> getGenerators(UUID uuid){
 		return this.generators.getOrDefault(uuid, null);
 	}
+	
+	public boolean canPlaceGenerator(UUID uuid) {
+		return getQuantityofGenerators(uuid) < max_gens;
+	}
+	
+	public int getQuantityofGenerators(UUID uuid) {
+		return this.generatorCount.getOrDefault(uuid, 0);
+	}
+	
+	public int getMaxGens() {
+		return max_gens;
+	}
+	
+	
 	
 	public void spawn() {
 		
@@ -44,11 +68,7 @@ public class GeneratorManager {
 						gen.spawn(gen.getBlock().getLocation());
 					});
 				}
-				
-				
 			}
-			//Maybe spawn the half of the normal rate if player is offline
-			
 		});
 		
 	}

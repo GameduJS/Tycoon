@@ -18,8 +18,8 @@ public class Generator extends IBaseGenerator{
 
 	private int tier = 1;
 	
-	public Generator(String name, int generatorLevel, Material material, GeneratorBlock genBlock) {
-		super(name, generatorLevel, material, genBlock);
+	public Generator(String name, int generatorLevel, Material material, double xp, GeneratorBlock genBlock) {
+		super(name, generatorLevel, material, xp, genBlock);
 		this.tier = generatorLevel;
 	}
 	

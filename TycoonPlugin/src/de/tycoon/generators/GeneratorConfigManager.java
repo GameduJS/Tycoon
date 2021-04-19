@@ -61,7 +61,8 @@ public class GeneratorConfigManager {
 							
 								
 								this.generatorManager.addGenerator(UUID.fromString(userFilesName[i].replace(".yml", "")), 
-										new Generator(configTier.getString("Generator.Name"), config.getInt("Generators." + key + ".Tier"), Material.valueOf(configTier.getString("Generator.Drop.Material")), 
+										new Generator(configTier.getString("Generator.Name"), config.getInt("Generators." + key + ".Tier"), Material.valueOf(configTier.getString("Generator.Drop.Material")),
+												configTier.getDouble("Generator.Drop.XP"),
 												new GeneratorBlock(
 														new Location(Bukkit.getWorld(config.getString("Generators." + key + ".Location.World")), config.getInt("Generators." + key + ".Location.X") , config.getInt("Generators." + key + ".Location.Y"), config.getInt("Generators." + key + ".Location.Z")), 
 														Material.valueOf(configTier.getString("Generator.Block")), 

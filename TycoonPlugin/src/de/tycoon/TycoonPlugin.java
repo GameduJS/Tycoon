@@ -12,10 +12,14 @@ import de.tycoon.commands.GetGeneratorCommand;
 import de.tycoon.commands.SellCommand;
 import de.tycoon.config.ConfigManager;
 import de.tycoon.discord.DiscordBot;
+import de.tycoon.discord.commands.ImageCreator;
+import de.tycoon.discord.commands.basecommand.CommandListener;
+import de.tycoon.discord.commands.basecommand.CommandManager;
 import de.tycoon.economy.UserManager;
 import de.tycoon.events.BlockInteract;
 import de.tycoon.generators.GeneratorConfigManager;
 import de.tycoon.generators.GeneratorManager;
+import de.tycoon.handlers.WorldHandler;
 import de.tycoon.language.LanguageHandler;
 import de.tycoon.threads.Threads;
 
@@ -23,13 +27,24 @@ public class TycoonPlugin extends JavaPlugin{
 
 	private static TycoonPlugin INSTANCE;
 	
-	private ConfigManager config;
 	private PluginManager pluginManager;
+	
+	private ConfigManager config;
 	private GeneratorManager generatorManager;
+	
 	private DiscordBot discordBot;
+	
 	private UserManager userManager;
+	
 	private GeneratorConfigManager generatorConfigManager;
+	
 	private LanguageHandler languageHandler;
+	
+	private WorldHandler worldHandler;
+	
+	
+	/** Discord **/
+	private CommandManager commandManager;
 	
 	private Threads threads;
 	
@@ -39,22 +54,31 @@ public class TycoonPlugin extends JavaPlugin{
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Enabling Tycoon Plugin");
 		
 		INSTANCE = this;
+		
 		this.pluginManager = Bukkit.getPluginManager();
 		
-		this.generatorManager = new GeneratorManager();
-		
 		this.config = new ConfigManager();
+
+		this.generatorManager = new GeneratorManager();
 		
 		this.generatorConfigManager = new GeneratorConfigManager();
 		this.generatorConfigManager.loadGenerators();
 		
 		this.languageHandler = new LanguageHandler();
-
+		this.languageHandler.setDefaultValues();
+		
 		this.userManager = new UserManager();
 		this.userManager.loadPlayersBalances();
 		
+		this.worldHandler = new WorldHandler();
+		this.worldHandler.loadWorlds();
+		
+		this.commandManager = new CommandManager();
+		
 		this.discordBot = new DiscordBot();
-		this.startDiscordBot();
+		this.registerDiscordEvents();
+		this.regiserDiscordCommands();
+		this.discordBot.start();
 		
 		this.threads = new Threads();
 		this.threads.startSpawnThread();
@@ -76,11 +100,13 @@ public class TycoonPlugin extends JavaPlugin{
 			
 		}
 		
+		
 	}
 	
 	@Override
 	public void onDisable() {
 //		
+		this.discordBot.stop();
 		this.generatorConfigManager.saveGenerators();
 		this.userManager.savePlayerBalance();
 
@@ -89,20 +115,25 @@ public class TycoonPlugin extends JavaPlugin{
 		
 	}
 	
-	private void startDiscordBot() {
-		this.discordBot.start();
+	private void registerEvents() {
+		this.pluginManager.registerEvents(new BlockInteract(), this);
 	}
 	
-	private void registerEvents() {
-		
-		this.pluginManager.registerEvents(new BlockInteract(), this);
-		
+	private void registerDiscordEvents() {
+		this.discordBot.addEvent(new CommandListener());
 	}
+	
+	private void regiserDiscordCommands() {
+		this.commandManager.getCommand("img").setExecuter(new ImageCreator());
+	}
+	
 
 	private void registerCommands() {
+		
 		this.getCommand("getgen").setExecutor(new GetGeneratorCommand());
 		this.getCommand("eco").setExecutor(new EconomyCommand());
 		this.getCommand("sell").setExecutor(new SellCommand());
+		
 	}
 
 
@@ -121,8 +152,14 @@ public class TycoonPlugin extends JavaPlugin{
 		return this.generatorManager;
 	}
 	
+	/* UserManager Getter */
 	public UserManager getUserManager() {
 		return userManager;
+	}
+	
+	/* CommandManager Getter */
+	public CommandManager getCommandManager() {
+		return commandManager;
 	}
 	
 	

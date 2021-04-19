@@ -29,10 +29,9 @@ public class GeneratorUpgradManager {
 
 
 
-	public int upgrade(Generator generator, UUID uuid) {
+	public void upgrade(Generator generator, UUID uuid) {
 		
 		int tier = generator.getGeneratorLevel() + 1;
-		if(tier == this.settingsConfig.getInt("Generators.Max-Tiers") + 1) return 1;
 		
 		this.genConfig = this.configManager.getConfigutationByTier(tier);
 		
@@ -42,13 +41,14 @@ public class GeneratorUpgradManager {
 		Material blockMaterial = Material.valueOf(this.genConfig.getString("Generator.Block"));
 		List<String> lores = this.genConfig.getStringList("Generator.Lore");
 		
-		Generator gen = new Generator(name, tier, dropMaterial, new GeneratorBlock(generator.getBlock().getLocation(), blockMaterial, name, lores));
+		double xp = this.genConfig.getDouble("Generator.Drop.XP");
+		
+		Generator gen = new Generator(name, tier, dropMaterial, xp, new GeneratorBlock(generator.getBlock().getLocation(), blockMaterial, name, lores));
 		generator.getBlock().getLocation().getBlock().setType(blockMaterial);
 		
 		this.generatorManager.removeGenerator(uuid, generator);
 		this.generatorManager.addGenerator(uuid, gen);
 		
-		return -1;
 		
 	}
 	

@@ -75,7 +75,7 @@ public class SellCommand implements CommandExecutor{
 			
 		}
 		
-		User user = this.userManager.loadUser(player);
+		User user = this.userManager.loadUser(player.getUniqueId());
 		
 		if(amount != 0) {
 			user.addMoney(payout);

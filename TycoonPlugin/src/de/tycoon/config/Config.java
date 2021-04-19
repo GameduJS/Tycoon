@@ -13,7 +13,7 @@ public class Config {
 	public static final String SETTING_PATH = "./plugins/Tycoon/Settings";
 	public static final String ECONOMY_PATH = "./plugins/Tycoon/Economy";
 	public static final String ECONOMY_USER_CHACHE_PATH = "./plugins/Tycoon/Economy";
-	public static final String DISCORD_SETTING_PATH = "./plugins/Tycoon/DiscordSettings";
+	public static final String DISCORD_PATH = "./plugins/Tycoon/Discord";
 	public static final String GENERATOR_CHACHE_PATH = "./plugins/Tycoon/GeneratorChache";
 	public static final String MESSAGES_PATH = "./plugins/Tycoon/Messages";
 	

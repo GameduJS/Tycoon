@@ -16,8 +16,6 @@ public class LanguageHandler {
 	public LanguageHandler() {
 		this.languages = new HashMap<>();
 		this.config = new Config(Config.MESSAGES_PATH, "lang.yml");
-		
-		this.setDefaultValues();
 	}
 	
 	public void registerLanguage(String langueageToken, Messages message, String sentence) {
@@ -80,7 +78,7 @@ public class LanguageHandler {
 	}
 	
 	
-	private void setDefaultValues() {
+	public void setDefaultValues() {
 		
 		for(Messages lang: Messages.values()) {
 			

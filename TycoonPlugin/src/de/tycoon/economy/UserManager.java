@@ -75,10 +75,10 @@ public class UserManager {
 	}
 	
 	
-	public User loadUser(Player player) {
-		if(!this.userData.containsKey(player.getUniqueId()))
-			this.userData.put(player.getUniqueId(), new IUser(player.getUniqueId()));	
-		return this.userData.get(player.getUniqueId());
+	public User loadUser(UUID uuid) {
+		if(!this.userData.containsKey(uuid))
+			this.userData.put(uuid, new IUser(uuid));	
+		return this.userData.get(uuid);
 	}
 	
 }

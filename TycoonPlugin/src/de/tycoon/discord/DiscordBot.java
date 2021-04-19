@@ -1,5 +1,6 @@
 package de.tycoon.discord;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -11,6 +12,7 @@ import org.bukkit.Bukkit;
 import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
+import de.tycoon.discord.commands.ImageCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -56,6 +58,12 @@ public class DiscordBot {
 	
 	
 	public void start() {
+		
+		if(!this.configManager.getSettingConfig().getBoolean("Discord.Bot-Enabled")) {
+			Bukkit.getLogger().info("Bot is disabled by config!");
+			return;
+		}
+		
 		this.token = this.discordConfig.getString("Bot.Token");
 		
 		if(this.token == null) {
@@ -73,10 +81,12 @@ public class DiscordBot {
 		
 		/** Register Events **/
 		this.events.stream().filter(Objects::nonNull).forEach(builder::addEventListeners);
+		Bukkit.getLogger().info("[DISCORD] Initialize Events!");
 		
 		/** Build the bot **/
 		try {
 			this.jda = builder.build();
+			Bukkit.getLogger().info("[DISCORD] Building bot...");
 		} catch (LoginException e) {
 			Bukkit.getLogger().warning("Error this is not a valid Discordbot Token!");
 			Bukkit.getLogger().warning("Error this is not a valid Discordbot Token!");
@@ -84,11 +94,18 @@ public class DiscordBot {
 		}
 	}
 	
+	public void stop() {
+		if(this.jda == null)
+			return;
+		
+		Bukkit.getLogger().info("[DISCORD] Shutdown bot...");
+		this.jda.getPresence().setStatus(OnlineStatus.OFFLINE);
+		this.jda.shutdown();
+		this.jda = null;
+	}
+	
 	
 	public void addEvent(ListenerAdapter adapter) {
 		this.events.add(adapter);
 	}
-	
-	
-	
 }

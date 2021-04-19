@@ -42,17 +42,17 @@ public class BlockInteract implements Listener{
 	private UserManager userManager;
 	private LanguageMessageUtils messageUtils;
 	
-	private Map<UUID, Long> cooldown;
+	private Map<UUID, Long> upgradeCooldown;
 	
 	 public BlockInteract() {
-
 		 this.plugin = TycoonPlugin.get();
 		 this.genManager = this.plugin.getGeneratorManager();
 		 this.configManager = this.plugin.getConfigManager();
 		 this.generatorUpgradManager = new GeneratorUpgradManager();
 		 this.userManager = this.plugin.getUserManager();
 		 this.messageUtils = new LanguageMessageUtils(Messages.PREFIX.getMessage());
-		 this.cooldown = new HashMap<>();
+		 
+		 this.upgradeCooldown = new HashMap<>();
 	 }
 	
 	@EventHandler
@@ -70,6 +70,13 @@ public class BlockInteract implements Listener{
 		if(!item.getItemMeta().getLore().contains(ChatColor.translateAlternateColorCodes('&', "&7A powerful and unlimited source!"))) return;
 		/** ;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;**/
 		
+		/* Check if user has reached generator limit */
+		if(!this.genManager.canPlaceGenerator(player.getUniqueId())) {
+			player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_REACHED_LIMIT));
+			e.setCancelled(true);
+			return;
+		}
+		
 		Generator gen = null;
 
 		/* Assign generator */
@@ -82,11 +89,15 @@ public class BlockInteract implements Listener{
 		
 		Material genMaterial = Material.valueOf(config.getString("Generator.Block"));
 		Material dropMaterial = Material.valueOf(config.getString("Generator.Drop.Material"));
+		
+		double xp = config.getDouble("Generator.Drop.XP");
 		/** ;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;-;**/
 		
 		/* Add generator to player */
-		gen = new Generator(name, tier, dropMaterial, new GeneratorBlock(e.getBlock().getLocation(), genMaterial, genName, genLores));
+		gen = new Generator(name, tier, dropMaterial, xp, new GeneratorBlock(e.getBlock().getLocation(), genMaterial, genName, genLores));
 		this.genManager.addGenerator(player.getUniqueId(), gen);
+		
+		player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_ADD).replace("%current_gens%", this.genManager.getQuantityofGenerators(player.getUniqueId()) + "").replace("%max_gens%", this.genManager.getMaxGens() + ""));
 		
 	}
 	
@@ -105,9 +116,9 @@ public class BlockInteract implements Listener{
 		
 		for(Generator gens : generatorsOfPlayers) {
 			
-			if(player.getGameMode() == GameMode.CREATIVE) return;
-			
 			if(gens.getBlock().getLocation().equals(location)) {
+				if(player.getGameMode() == GameMode.CREATIVE) return;
+				
 				e.setCancelled(true);
 				break;
 			}
@@ -152,26 +163,30 @@ public class BlockInteract implements Listener{
 		
 		if(genToUpgrade == null) return;
 		
-		if(cooldown.containsKey(player.getUniqueId()) && cooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
+		/* Added short upgradeCooldown, that user don't upgrade directly 2 times */
+		if(upgradeCooldown.containsKey(player.getUniqueId()) && upgradeCooldown.get(player.getUniqueId()) > System.currentTimeMillis()) {
 
-			User user = this.userManager.loadUser(player);
+			User user = this.userManager.loadUser(player.getUniqueId());
 			int upgradePrice = this.configManager.getConfigutationByTier(genToUpgrade.getGeneratorLevel()).getInt("Generator.UpgradePrice");
 			
-			if(upgradePrice > user.getBalance()) {
-				player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_NOT_ENOUGH_MONEY).replace("%more_money%", upgradePrice - user.getBalance() + ""));
+			if(genToUpgrade.getGeneratorLevel() == this.configManager.getSettingConfig().getInt("Generators.Max-Tiers")) {
 				return;
 			}
 			
-			int status = this.generatorUpgradManager.upgrade(genToUpgrade, player.getUniqueId());
-			
-			if(status == -1) {
-				player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
-				player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_UPGRADE));
-				user.removeMoney(upgradePrice);
+			/* Check if player has enough money for the generator upgrade */
+			if(upgradePrice > user.getBalance()) {
+				player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_NOT_ENOUGH_MONEY).replace("%money%", upgradePrice - user.getBalance() + ""));
+				return;
 			}
 			
+			this.generatorUpgradManager.upgrade(genToUpgrade, player.getUniqueId());
+			user.removeMoney(upgradePrice);
+			
+			player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+			player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_UPGRADE));
+			
 		} else {
-			cooldown.put(player.getUniqueId(), System.currentTimeMillis() + 20);
+			upgradeCooldown.put(player.getUniqueId(), System.currentTimeMillis() + 20);
 		}
 		
 		
@@ -190,6 +205,7 @@ public class BlockInteract implements Listener{
 		
 		Generator genToRemove = null;
 		
+		/* Check if clicked block is a generator from player */
 		for(Generator gens : generatorsOfPlayers) {
 			if(gens.getBlock().getLocation().equals(location)) {
 				genToRemove = gens;
@@ -199,14 +215,14 @@ public class BlockInteract implements Listener{
 		
 		if(genToRemove == null) return;
 		
+			
 		this.genManager.removeGenerator(player.getUniqueId(), genToRemove);
 		genToRemove.getBlock().getLocation().getBlock().setType(Material.AIR);
+		
 		player.playSound(player.getLocation(), Sound.BLOCK_LEVER_CLICK, 1, 1);
-		player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_REMOVE));
+		player.sendMessage(this.messageUtils.get(player, Messages.GENERATOR_REMOVE).replace("%current_gens%", this.genManager.getQuantityofGenerators(player.getUniqueId()) + "").replace("%max_gens%", this.genManager.getMaxGens() + ""));
 		player.getInventory().addItem(genToRemove.getGeneratorItem(this.configManager));
 		
+		
 	}
-	
-	
-	
 }
