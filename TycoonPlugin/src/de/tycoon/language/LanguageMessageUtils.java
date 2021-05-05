@@ -8,6 +8,7 @@ import de.tycoon.config.Config;
 public class LanguageMessageUtils {
 
 	private Config config;
+	@SuppressWarnings("unused")
 	private String prefix;
 
 	public LanguageMessageUtils(String prefix) {

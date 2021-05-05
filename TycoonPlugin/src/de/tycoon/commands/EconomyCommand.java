@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import de.tycoon.TycoonPlugin;
-import de.tycoon.config.ConfigManager;
 import de.tycoon.economy.User;
 import de.tycoon.economy.UserManager;
 import de.tycoon.language.LanguageMessageUtils;
@@ -16,21 +15,19 @@ import de.tycoon.language.Messages;
 public class EconomyCommand implements CommandExecutor {
 
 	private TycoonPlugin plugin;
-	private ConfigManager configManager;
 	private UserManager userManager;
 	private LanguageMessageUtils messageUtils;
 	
 	public EconomyCommand() {
 		this.plugin = TycoonPlugin.get();
 		
-		this.configManager = plugin.getConfigManager();
 		this.userManager = plugin.getUserManager();
 		this.messageUtils = new LanguageMessageUtils(Messages.PREFIX.getMessage());
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
+		
 		if(label.equalsIgnoreCase("bal") || label.equalsIgnoreCase("money")) {
 			
 			if(!(sender instanceof Player)) return true;

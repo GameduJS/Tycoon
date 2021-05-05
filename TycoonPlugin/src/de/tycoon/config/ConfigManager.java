@@ -6,13 +6,8 @@ import java.util.List;
 
 import org.bukkit.Material;
 
-import de.tycoon.TycoonPlugin;
-
 public class ConfigManager {
 
-	/* Main */
-	private TycoonPlugin plugin;
-	
 	/* Setting Configuration */
 	private Config settingConfig;
 	
@@ -23,8 +18,7 @@ public class ConfigManager {
 	private List<Config> generatorConfigs;
 	
 	public ConfigManager() {
-		this.plugin = TycoonPlugin.get();
-		this.settingConfig = new Config(Config.SETTING_PATH, "Settings");
+		this.settingConfig = new Config(Config.SETTING_PATH, "GeneralSettings");
 		this.discordConfig = new Config(Config.DISCORD_PATH, "Bot");
 		this.generatorConfigs = new ArrayList<>();
 		
@@ -37,10 +31,7 @@ public class ConfigManager {
 		
 		/* Amount of tiers (Later on Setting Configuration) */
 		int amount = (int) this.settingConfig.getOrDefault("Generators.Max-Tiers", 15);
-		
-		/* Check if given amount is smaller than 15 */
-		// amount = (int) Math.min(amount, 15);
-		
+
 		/* Set configuration into list */
 		for(int i = 1; i < amount + 1; i++) {
 			this.generatorConfigs.add(
@@ -218,6 +209,7 @@ public class ConfigManager {
 						xpToDrop = 0;
 						break;
 					}
+					
 					}
 					
 					config.set("Generator.Name", "Generator Tier " + i);
@@ -245,6 +237,7 @@ public class ConfigManager {
 			this.settingConfig.set("Generators.Scheduler-Time", 15);
 			this.settingConfig.set("Generators.Generator-Limit", 20);
 			this.settingConfig.set("Generators.Max-Tiers", 15);
+			this.settingConfig.set("Worlds.Auto-Generate-TokenMine", true);
 		}
 		
 		if(!this.settingConfig.contains("Discord")) {			

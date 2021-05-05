@@ -15,7 +15,6 @@ import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
 import de.tycoon.economy.User;
 import de.tycoon.economy.UserManager;
-import de.tycoon.generators.GeneratorManager;
 import de.tycoon.handlers.SellHandler;
 import de.tycoon.language.LanguageMessageUtils;
 import de.tycoon.language.Messages;
@@ -24,28 +23,29 @@ public class SellCommand implements CommandExecutor{
 
 	private TycoonPlugin plugin;
 	private ConfigManager configManager;
-	private GeneratorManager generatorManager;
 	private UserManager userManager;
 	private SellHandler sellHandler;
 	private LanguageMessageUtils messageUtils;
 	
 	private Map<Material, Double> sellPrices;
+	private Map<Material, Double> xp;
 	
 	
 	public SellCommand() {
 		this.plugin = TycoonPlugin.get();
 		this.configManager = this.plugin.getConfigManager();
-		this.generatorManager = this.plugin.getGeneratorManager();
 		this.userManager = this.plugin.getUserManager();
 		this.sellHandler = new SellHandler();
 		this.messageUtils = new LanguageMessageUtils(Messages.PREFIX.getMessage());
 		this.sellPrices = new HashMap<>();
+		this.xp = new HashMap<>();
 		this.initPrices();
 	}
 	
 	private void initPrices() {
 		for(Config config : this.configManager.getGeneratorConfigs()) {
 			this.sellPrices.put(Material.valueOf(config.getString("Generator.Drop.Material")), config.getDouble("Generator.Drop.Price"));
+			this.xp.put(Material.valueOf(config.getString("Generator.Drop.Material")), config.getDouble("Generator.Drop.XP"));
 		}
 	}
 	
@@ -59,11 +59,9 @@ public class SellCommand implements CommandExecutor{
 		
 		Player player = (Player) sender;
 		
-//		player.sendMessage("You have " + sellHandler.getAmount(player.getInventory(), Material.HONEYCOMB) + " honeycombs");
-//		this.sellHandler.removeItems(player.getInventory(), Material.HONEYCOMB);
-		
 		double amount = 0;
 		double payout = 0;
+		double gainedXPAmount = 0;
 		
 		for(Material material : this.sellPrices.keySet()) {
 			
@@ -71,6 +69,7 @@ public class SellCommand implements CommandExecutor{
 				amount += this.sellHandler.getAmount(player.getInventory(), material);
 				this.sellHandler.removeItems(player.getInventory(), material);
 				payout += amount * this.sellPrices.get(material);
+				gainedXPAmount+=amount * this.xp.get(material);
 			}
 			
 		}
@@ -79,7 +78,9 @@ public class SellCommand implements CommandExecutor{
 		
 		if(amount != 0) {
 			user.addMoney(payout);
-			player.sendMessage(this.messageUtils.get(player, Messages.ECONOMY_SELL).replace("%money%", new DecimalFormat("#,###.#").format( payout )));
+			user.addXP(gainedXPAmount);
+			player.sendMessage(this.messageUtils.get(player, Messages.ECONOMY_SELL).replace("%money%", new DecimalFormat("#,###.#").format( payout ) ) + "§b You gained §a"+ gainedXPAmount + " XP§3 (" 
+					+ Math.round((user.getUserLevel().getCurrentLevelXP() / user.getUserLevel().getXPNeeded()) * 100) + "% to " + (user.getUserLevel().getLevel() + 1) + ")");
 		}
 		
 		return false;

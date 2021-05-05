@@ -45,7 +45,7 @@ public class ImageCreator implements DiscordCommand{
 		FileUtils.createFolderIfNotExists(file);
 	}
 
-	public void create(OfflinePlayer player) throws MalformedURLException, IOException {
+	public File create(OfflinePlayer player) throws MalformedURLException, IOException {
 
 		int width = 1080;
 		int height = 540;
@@ -56,12 +56,13 @@ public class ImageCreator implements DiscordCommand{
 		// Create a graphics which can be used to draw into the buffered image
 		Graphics2D g2d = bufferedImage.createGraphics();
 
+		//Background
 		g2d.drawImage(
 				ImageIO.read(new File(
 						this.file, "BG.png")),
 				0, 0, width, height, null);
 
-		// create a string with yellow
+		//Draw Strings
 		g2d.setColor(Color.WHITE);
 		g2d.setFont(new Font("Minecraft", 0, 48));
 
@@ -74,13 +75,22 @@ public class ImageCreator implements DiscordCommand{
 		String placedGens = "Placed Generators: " + this.generatorManager.getQuantityofGenerators(player.getUniqueId()) + "/" + this.generatorManager.getMaxGens();
 		String money = "Money: " +  new DecimalFormat("#,###.#").format(user.getBalance()) + "€";
 		String tokens = "Tokens: " + new DecimalFormat("#,###.#").format(user.getTokens());
+		String levels = "Level: " + this.userManager.loadUser(player.getUniqueId()).getUserLevel().getLevel();
 	
+		String credits = "Skins by Crafatar";
+		
 		g2d.setColor(Color.yellow);
 		g2d.drawString(placedGens, 350, 230);
 		g2d.drawString(money, 350, 230 + g2d.getFont().getSize() + 10);
 		g2d.drawString(tokens, 350, 230 + g2d.getFont().getSize() * 2 + 20);
-		g2d.drawString("Level: 156", 350, 230 + (g2d.getFont().getSize() + 10) * 3);
+		g2d.drawString(levels, 350, 230 + (g2d.getFont().getSize() + 10) * 3);
+		
+		g2d.setFont(new Font("Minecraft", 0, 14));
+		g2d.setColor(Color.WHITE);
+		g2d.drawString(credits, width - (credits.length() * g2d.getFont().getSize() / 2) - 10, height - 20);
+		
 		// Output -> Calculate on load / add / remove
+		// e.g.: 40$/h
 
 		// Skin
 		String uuid = player.getUniqueId().toString();
@@ -95,7 +105,9 @@ public class ImageCreator implements DiscordCommand{
 		// Save as PNG
 		File file = new File(this.file, uuid +".png");
 		ImageIO.write(bufferedImage, "png", file);
-
+		
+		return file;
+		
 	}
 
 	@Override
@@ -105,26 +117,24 @@ public class ImageCreator implements DiscordCommand{
 		message.delete().queue();
 		
 		if(args.length < 2) {
-			textChannel.sendMessage(new EmbedBuilder().setDescription("You have to provide an player name!").setColor(Color.RED ).build()).queue();
+			textChannel.sendMessage(new EmbedBuilder().setDescription("Hey" + member.getAsMention() + "\nYou have to provide an player name!").setColor(new Color(252, 255, 87)).build()).queue();
 			return false;
 		}
 		
 		OfflinePlayer player = PlayerUtils.getOfflinePlayer(args[1]);
 		if(player == null) {
-			textChannel.sendMessage(new EmbedBuilder().setDescription("This player never played before!").setColor(Color.RED).build()).queue();
+			textChannel.sendMessage(new EmbedBuilder().setDescription("Hey" + member.getAsMention() + "\nThis player never played before!").setColor(new Color(255, 26, 26)).build()).queue();
 			return false;
 		}
 		
 		try {
-			create(player);
+			File picture = create(player);
+			textChannel.sendFile(picture).queue();
+			org.apache.cassandra.io.util.FileUtils.delete(new File[]{picture});
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		File picture = new File("./plugins/Tycoon/Discord/PictureChache/" + player.getUniqueId().toString() +".png");
-		
-		textChannel.sendFile(picture).queue();
-		org.apache.cassandra.io.util.FileUtils.delete(new File[]{picture});
 		
 		return false;
 	}

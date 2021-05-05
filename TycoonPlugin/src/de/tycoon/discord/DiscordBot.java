@@ -1,6 +1,5 @@
 package de.tycoon.discord;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +11,6 @@ import org.bukkit.Bukkit;
 import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
 import de.tycoon.config.ConfigManager;
-import de.tycoon.discord.commands.ImageCreator;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
@@ -99,9 +97,17 @@ public class DiscordBot {
 			return;
 		
 		Bukkit.getLogger().info("[DISCORD] Shutdown bot...");
-		this.jda.getPresence().setStatus(OnlineStatus.OFFLINE);
-		this.jda.shutdown();
-		this.jda = null;
+		
+		try {
+			
+			this.jda.getPresence().setStatus(OnlineStatus.OFFLINE);
+			this.jda.shutdown();
+			this.jda = null;
+			
+		}catch (Exception e) {
+			return;
+		}
+		
 	}
 	
 	

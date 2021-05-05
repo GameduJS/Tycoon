@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 public class Config {
 
@@ -16,6 +17,7 @@ public class Config {
 	public static final String DISCORD_PATH = "./plugins/Tycoon/Discord";
 	public static final String GENERATOR_CHACHE_PATH = "./plugins/Tycoon/GeneratorChache";
 	public static final String MESSAGES_PATH = "./plugins/Tycoon/Messages";
+	public static final String SHOP_PATH = "./plugins/Tycoon/Shop";
 	
 	private File file;
 	private YamlConfiguration configuration;
@@ -86,6 +88,12 @@ public class Config {
 		if(!contains(path))
 			return (Double) null;
 		return this.configuration.getDouble(path);
+	}
+	
+	public ItemStack getItemStack(String path) {
+		if(!contains(path))
+			return null;
+		return this.configuration.getItemStack(path);
 	}
 	
 	public List<String> getStringList(String path) {

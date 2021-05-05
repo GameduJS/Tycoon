@@ -1,26 +1,32 @@
 package de.tycoon;
 
-import javax.security.auth.login.LoginException;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tycoon.commands.EconomyCommand;
 import de.tycoon.commands.GetGeneratorCommand;
+import de.tycoon.commands.MenuGuiCommand;
 import de.tycoon.commands.SellCommand;
+import de.tycoon.commands.ShopGuiEditor;
+import de.tycoon.commands.WorldRegisterCommand;
 import de.tycoon.config.ConfigManager;
 import de.tycoon.discord.DiscordBot;
 import de.tycoon.discord.commands.ImageCreator;
 import de.tycoon.discord.commands.basecommand.CommandListener;
-import de.tycoon.discord.commands.basecommand.CommandManager;
+import de.tycoon.discord.commands.basecommand.DiscordCommandManager;
 import de.tycoon.economy.UserManager;
 import de.tycoon.events.BlockInteract;
+import de.tycoon.events.TokenMineEvents;
 import de.tycoon.generators.GeneratorConfigManager;
 import de.tycoon.generators.GeneratorManager;
+import de.tycoon.gui.MenuListener;
 import de.tycoon.handlers.WorldHandler;
 import de.tycoon.language.LanguageHandler;
+import de.tycoon.shop.ShopHandler;
+import de.tycoon.shop.ShopItem;
 import de.tycoon.threads.Threads;
 
 public class TycoonPlugin extends JavaPlugin{
@@ -30,6 +36,7 @@ public class TycoonPlugin extends JavaPlugin{
 	private PluginManager pluginManager;
 	
 	private ConfigManager config;
+	
 	private GeneratorManager generatorManager;
 	
 	private DiscordBot discordBot;
@@ -42,11 +49,14 @@ public class TycoonPlugin extends JavaPlugin{
 	
 	private WorldHandler worldHandler;
 	
-	
-	/** Discord **/
-	private CommandManager commandManager;
+	private ShopHandler shopHandler;
 	
 	private Threads threads;
+
+	
+	/** Discord **/
+	private DiscordCommandManager discordCommandManager;
+	
 	
 	@Override
 	public void onEnable() {
@@ -54,6 +64,8 @@ public class TycoonPlugin extends JavaPlugin{
 		Bukkit.getConsoleSender().sendMessage(ChatColor.GREEN + "Enabling Tycoon Plugin");
 		
 		INSTANCE = this;
+		
+		ConfigurationSerialization.registerClass(ShopItem.class, "ShopItem");
 		
 		this.pluginManager = Bukkit.getPluginManager();
 		
@@ -73,7 +85,9 @@ public class TycoonPlugin extends JavaPlugin{
 		this.worldHandler = new WorldHandler();
 		this.worldHandler.loadWorlds();
 		
-		this.commandManager = new CommandManager();
+		this.shopHandler = new ShopHandler();
+		
+		this.discordCommandManager = new DiscordCommandManager();
 		
 		this.discordBot = new DiscordBot();
 		this.registerDiscordEvents();
@@ -82,41 +96,41 @@ public class TycoonPlugin extends JavaPlugin{
 		
 		this.threads = new Threads();
 		this.threads.startSpawnThread();
+		this.threads.startSavingThread();
 		
+		this.createTokenMine();
 		this.registerCommands();
+		
+		
+		this.pluginManager.registerEvents(new MenuListener(), INSTANCE);
 		
 		/* Check if generator are enabled */
 		if(this.config.getSettingConfig().getBoolean("Generators.Enabled")) {
-			
 			this.registerEvents();
-			
 		} else {
-			
 			Bukkit.getConsoleSender().sendMessage("§7-------------------------------------");
 			Bukkit.getConsoleSender().sendMessage("");
 			Bukkit.getConsoleSender().sendMessage("§c Gens are diabled through Config");
 			Bukkit.getConsoleSender().sendMessage("");
 			Bukkit.getConsoleSender().sendMessage("§7-------------------------------------");
-			
 		}
-		
 		
 	}
 	
 	@Override
 	public void onDisable() {
-//		
+	
 		this.discordBot.stop();
 		this.generatorConfigManager.saveGenerators();
 		this.userManager.savePlayerBalance();
 
 		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Disbling Tycoon Plugin");
 		
-		
 	}
 	
 	private void registerEvents() {
 		this.pluginManager.registerEvents(new BlockInteract(), this);
+		this.pluginManager.registerEvents(new TokenMineEvents(), this);
 	}
 	
 	private void registerDiscordEvents() {
@@ -124,25 +138,33 @@ public class TycoonPlugin extends JavaPlugin{
 	}
 	
 	private void regiserDiscordCommands() {
-		this.commandManager.getCommand("img").setExecuter(new ImageCreator());
+		this.discordCommandManager.getCommand("img").setExecuter(new ImageCreator());
 	}
 	
 
 	private void registerCommands() {
-		
 		this.getCommand("getgen").setExecutor(new GetGeneratorCommand());
 		this.getCommand("eco").setExecutor(new EconomyCommand());
 		this.getCommand("sell").setExecutor(new SellCommand());
-		
+		this.getCommand("menu").setExecutor(new MenuGuiCommand());
+		this.getCommand("editshopgui").setExecutor(new ShopGuiEditor());
+		this.getCommand("map").setExecutor(new WorldRegisterCommand());
+	}
+	
+	private void createTokenMine() {
+		if(getConfigManager().getSettingConfig().contains("Worlds.Auto-Generate-TokenMine")) {
+			if(!getConfigManager().getSettingConfig().getBoolean("Worlds.Auto-Generate-TokenMine")) return;
+			getWorldHandler().registerNewWorld("TokenMine");
+		}
 	}
 
 
-	/* Plugin Getter */
+	/* TycoonPlugin Getter */
 	public static TycoonPlugin get() {
 		return INSTANCE;
 	}
 	
-	/* Configmanager Getter */
+	/* ConfigManager Getter */
 	public ConfigManager getConfigManager() {
 		return config;
 	}
@@ -158,9 +180,23 @@ public class TycoonPlugin extends JavaPlugin{
 	}
 	
 	/* CommandManager Getter */
-	public CommandManager getCommandManager() {
-		return commandManager;
+	public DiscordCommandManager getDiscordCommandManager() {
+		return discordCommandManager;
 	}
 	
+	/* GeneratorConfigManager Getter */
+	public GeneratorConfigManager getGeneratorConfigManager() {
+		return generatorConfigManager;
+	}
+	
+	/* ShopHandler Getter */
+	public ShopHandler getShopHandler() {
+		return shopHandler;
+	}
+	
+	/* WorldHandler Getter */
+	public WorldHandler getWorldHandler() {
+		return worldHandler;
+	}
 	
 }

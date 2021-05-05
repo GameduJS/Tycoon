@@ -8,11 +8,15 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 
+import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
+import de.tycoon.config.ConfigManager;
 import de.tycoon.generators.generator.Generator;
 
 public class GeneratorManager {
 
+	private ConfigManager configManager;
+	
 	private Map<UUID, List<Generator>> generators;
 	private Map<UUID, Integer> generatorCount;
 	private Config config;
@@ -22,7 +26,9 @@ public class GeneratorManager {
 		this.generators = new HashMap<>();
 		this.generatorCount = new HashMap<>();
 		
-		this.config = new Config(Config.SETTING_PATH, "Settings");
+		this.configManager = TycoonPlugin.get().getConfigManager();
+		
+		this.config = this.configManager.getSettingConfig();
 		max_gens = this.config.getInt("Generators.Generator-Limit");
 	}
 	

@@ -34,18 +34,19 @@ public class ItemBuilder {
 			
 			this.material = material;
 			this.displayName = "";
-			this.amount = 1;
-			this.item = new ItemStack(material);
+			this.amount = amount;
+			this.item = new ItemStack(material, amount);
 			this.meta = item.getItemMeta();
 			this.lore = new ArrayList<String>();
 		}
 	
+	@SuppressWarnings("deprecation")
 	public ItemBuilder(Material material, int amount, short data) {
 		
 		this.material = material;
 		this.displayName = "";
-		this.amount = 1;
-		this.item = new ItemStack(material, 1, data);
+		this.amount = amount;
+		this.item = new ItemStack(material, this.amount, data);
 		this.meta = item.getItemMeta();
 		this.lore = new ArrayList<String>();
 	}
@@ -83,6 +84,7 @@ public class ItemBuilder {
 		return this;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public ItemBuilder setDurability(int dura) {
 		this.item.setDurability((short) dura);
 		return this;

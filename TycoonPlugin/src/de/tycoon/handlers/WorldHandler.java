@@ -29,18 +29,14 @@ public class WorldHandler {
 	}
 	
 	public void sendPlayerTo(Player player, String world) {
-		
 		if(!this.worlds.keySet().contains(world))
 			return;
-		
 		player.teleport(this.worlds.get(world).getSpawnLocation());
-
 	}
 	
-	public void registerNewWorld(String name) {
-		
+	public World registerNewWorld(String name) {
 		if(this.worlds.keySet().contains(name))
-			return;
+			return this.worlds.get(name);
 		
 		WorldCreator wc = new WorldCreator(name);
 		wc.generator(new ChunkGenerator() {
@@ -52,10 +48,10 @@ public class WorldHandler {
 		World world = wc.createWorld();
 		this.worlds.put(name, world);
 		
+		return world;
 	}
 	
 	public void removeWorld(String name) {
-		
 		if(!this.worlds.keySet().contains(name))
 			return;
 		
@@ -63,7 +59,10 @@ public class WorldHandler {
 		this.worlds.remove(name);
 
 		FileUtils.delete(name);
-		
+	}
+	
+	public World getWorld(String name) {
+		return this.worlds.getOrDefault(name, Bukkit.getWorld("world"));
 	}
 	
 	public Set<String> getExistingWorlds(){
