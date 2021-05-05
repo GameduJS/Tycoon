@@ -7,13 +7,13 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.TextChannel;
 
-public class CommandManager {
+public class DiscordCommandManager {
 
 	public ConcurrentHashMap<String, DiscordCommand> commands;
 	public String thisCmd;
 	public DiscordCommand thisServerCmd;
 	
-	public CommandManager() {
+	public DiscordCommandManager() {
 		this.commands = new ConcurrentHashMap<String, DiscordCommand>();
 	}
 	
@@ -27,7 +27,7 @@ public class CommandManager {
 		return false;
 	}
 	
-	public CommandManager getCommand(String cmd) {
+	public DiscordCommandManager getCommand(String cmd) {
 		this.thisCmd = cmd;
 		return this;
 	}

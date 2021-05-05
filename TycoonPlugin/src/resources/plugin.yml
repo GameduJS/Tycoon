@@ -8,4 +8,7 @@ commands:
   eco:
     aliases: [bal, money]
   sell:
+  menu:
+  editshopgui:
+  map:
   

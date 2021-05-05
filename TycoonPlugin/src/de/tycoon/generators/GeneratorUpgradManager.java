@@ -16,13 +16,11 @@ public class GeneratorUpgradManager {
 	private TycoonPlugin plugin;
 	private ConfigManager configManager;
 	private GeneratorManager generatorManager;
-	private Config settingsConfig;
 	private Config genConfig;
 	
 	public GeneratorUpgradManager() {
 		this.plugin = TycoonPlugin.get();
 		this.configManager = plugin.getConfigManager();
-		this.settingsConfig = configManager.getSettingConfig();
 		this.generatorManager = plugin.getGeneratorManager();
 	}
 

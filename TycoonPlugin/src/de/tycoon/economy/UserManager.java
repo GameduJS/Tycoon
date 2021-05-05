@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
 import de.tycoon.config.Config;
+import de.tycoon.economy.levels.LevelManager;
+import de.tycoon.economy.levels.Levels;
 import de.tycoon.util.FileUtils;
 
 public class UserManager {
@@ -36,6 +36,7 @@ public class UserManager {
 			}
 			
 		};
+		
 		String[] userFilesName = userChacheFolder.list(filter);
 		
 		/* Load user balance */
@@ -46,7 +47,17 @@ public class UserManager {
 			Config config = new Config(Config.ECONOMY_USER_CHACHE_PATH, userFilesName[i]);
 			User user = new IUser(UUID.fromString(uuid));
 			user.setBalance(config.getDouble(uuid + ".Money"));
-			user.setTokens(config.getInt(uuid + ".Tokens"));
+			user.setTokens(config.getInt(uuid + ".Tokens"));	
+			
+			int level =config.getInt(uuid.toString() + ".Levels.Level");
+			double currentXP = config.getDouble(uuid.toString() + ".Levels.CurrentXP");
+			
+			Levels levels = new Levels(
+					level,
+					currentXP,
+					LevelManager.BASE_XP * (Math.pow(LevelManager.XP_MULTIPLIER, level))
+					);
+			user.setUserLevel(levels);
 			
 			this.userData.put(UUID.fromString(uuid), (IUser) user);
 			
@@ -70,10 +81,12 @@ public class UserManager {
 			config.set(uuid.toString() + ".Money", Math.round(this.userData.get(uuid).getBalance() * 100d) / 100d);
 			config.set(uuid.toString() + ".Tokens", this.userData.get(uuid).getTokens());
 			
+			config.set(uuid.toString() + ".Levels.Level", this.userData.get(uuid).getUserLevel().getLevel());
+			config.set(uuid.toString() + ".Levels.CurrentXP", this.userData.get(uuid).getUserLevel().getCurrentLevelXP());
+			
 		});
 		
 	}
-	
 	
 	public User loadUser(UUID uuid) {
 		if(!this.userData.containsKey(uuid))

@@ -46,7 +46,7 @@ public class PlayerUtils {
 	
 	 public static OfflinePlayer getOfflinePlayer(String name) {
 	        for(OfflinePlayer player : Bukkit.getOfflinePlayers()) {
-	            if(player.getName().equals(name)) return player;
+	            if(player.getName().equalsIgnoreCase(name)) return player;
 	        }
 	        return null;
 	    }
