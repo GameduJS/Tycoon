@@ -124,6 +124,8 @@ public class TycoonPlugin extends JavaPlugin{
 		this.generatorConfigManager.saveGenerators();
 		this.userManager.savePlayerBalance();
 
+		TokenMineEvents.restore();
+		
 		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Disbling Tycoon Plugin");
 		
 	}
