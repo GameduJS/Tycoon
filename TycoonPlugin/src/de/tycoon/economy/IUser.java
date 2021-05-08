@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import de.tycoon.economy.levels.LevelManager;
 import de.tycoon.economy.levels.Levels;
-import de.tycoon.util.PlayerUtils;
+import de.tycoon.util.BukkitUtils;
 
 public class IUser extends User{
 
@@ -76,7 +76,7 @@ public class IUser extends User{
 		double needXP = this.levels.getXPNeeded();
 		
 		if(calcLevel(level, currentXP, needXP, level)) {
-			PlayerUtils.fromUUID(getUUID()).sendMessage("You leveld up!");
+			BukkitUtils.fromUUID(getUUID()).sendMessage("You leveld up!");
 		}
 		
 	}
