@@ -7,7 +7,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tycoon.commands.EconomyCommand;
-import de.tycoon.commands.GetGeneratorCommand;
 import de.tycoon.commands.MenuGuiCommand;
 import de.tycoon.commands.SellCommand;
 import de.tycoon.commands.ShopGuiEditor;
@@ -19,6 +18,7 @@ import de.tycoon.discord.commands.basecommand.CommandListener;
 import de.tycoon.discord.commands.basecommand.DiscordCommandManager;
 import de.tycoon.economy.UserManager;
 import de.tycoon.events.BlockInteract;
+import de.tycoon.events.StartListener;
 import de.tycoon.events.TokenMineEvents;
 import de.tycoon.generators.GeneratorConfigManager;
 import de.tycoon.generators.GeneratorManager;
@@ -133,6 +133,7 @@ public class TycoonPlugin extends JavaPlugin{
 	private void registerEvents() {
 		this.pluginManager.registerEvents(new BlockInteract(), this);
 		this.pluginManager.registerEvents(new TokenMineEvents(), this);
+		this.pluginManager.registerEvents(new StartListener(), this);
 	}
 	
 	private void registerDiscordEvents() {
@@ -145,7 +146,6 @@ public class TycoonPlugin extends JavaPlugin{
 	
 
 	private void registerCommands() {
-		this.getCommand("getgen").setExecutor(new GetGeneratorCommand());
 		this.getCommand("eco").setExecutor(new EconomyCommand());
 		this.getCommand("sell").setExecutor(new SellCommand());
 		this.getCommand("menu").setExecutor(new MenuGuiCommand());

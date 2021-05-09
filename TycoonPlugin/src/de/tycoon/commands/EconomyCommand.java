@@ -1,5 +1,6 @@
 package de.tycoon.commands;
 
+import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -55,6 +56,8 @@ public class EconomyCommand implements CommandExecutor {
 					player.sendMessage("Invalid amount!");
 					return true;
 				}
+				
+				if(!NumberUtils.isDigits(args[1])) return true;
 				
 				double moneyToAdd = Double.parseDouble(args[1]);
 

@@ -83,8 +83,12 @@ public class IUser extends User{
 	
 	public boolean calcLevel(int level, double currentXP, double xpNeeded, int tmpLevel) {
 		if(currentXP >= xpNeeded) {
+			//Calc
 			currentXP -=xpNeeded;
 			level++;
+			xpNeeded = LevelManager.BASE_XP * Math.pow(LevelManager.XP_MULTIPLIER, level);
+			
+			//Recursiv
 			calcLevel(level, currentXP, xpNeeded, tmpLevel);
 		} else {
 				this.levels.setLevel(level);
