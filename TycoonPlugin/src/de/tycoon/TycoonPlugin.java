@@ -7,7 +7,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tycoon.commands.EconomyCommand;
-import de.tycoon.commands.GetGeneratorCommand;
 import de.tycoon.commands.MenuGuiCommand;
 import de.tycoon.commands.SellCommand;
 import de.tycoon.commands.ShopGuiEditor;
@@ -145,7 +144,6 @@ public class TycoonPlugin extends JavaPlugin{
 	
 
 	private void registerCommands() {
-		this.getCommand("getgen").setExecutor(new GetGeneratorCommand());
 		this.getCommand("eco").setExecutor(new EconomyCommand());
 		this.getCommand("sell").setExecutor(new SellCommand());
 		this.getCommand("menu").setExecutor(new MenuGuiCommand());
