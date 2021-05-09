@@ -46,6 +46,8 @@ public class WorldHandler {
 			}
 		});
 		World world = wc.createWorld();
+		world.setWeatherDuration(0);
+		world.setTime(6000);
 		this.worlds.put(name, world);
 		
 		return world;

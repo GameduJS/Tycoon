@@ -124,6 +124,8 @@ public class TycoonPlugin extends JavaPlugin{
 		this.generatorConfigManager.saveGenerators();
 		this.userManager.savePlayerBalance();
 
+		TokenMineEvents.restore();
+		
 		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "Disbling Tycoon Plugin");
 		
 	}
@@ -154,7 +156,7 @@ public class TycoonPlugin extends JavaPlugin{
 	private void createTokenMine() {
 		if(getConfigManager().getSettingConfig().contains("Worlds.Auto-Generate-TokenMine")) {
 			if(!getConfigManager().getSettingConfig().getBoolean("Worlds.Auto-Generate-TokenMine")) return;
-			getWorldHandler().registerNewWorld("TokenMine");
+				getWorldHandler().registerNewWorld(this.getConfigManager().getSettingConfig().getString("TokenMineWorld"));
 		}
 	}
 

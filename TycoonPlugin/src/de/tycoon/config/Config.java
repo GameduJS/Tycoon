@@ -18,6 +18,7 @@ public class Config {
 	public static final String GENERATOR_CHACHE_PATH = "./plugins/Tycoon/GeneratorChache";
 	public static final String MESSAGES_PATH = "./plugins/Tycoon/Messages";
 	public static final String SHOP_PATH = "./plugins/Tycoon/Shop";
+	public static final String TOKENMINE_PATH = "./plugins/Tycoon/TokenMine";
 	
 	private File file;
 	private YamlConfiguration configuration;

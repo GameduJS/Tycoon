@@ -244,6 +244,10 @@ public class ConfigManager {
 			this.settingConfig.set("Discord.Bot-Enabled", true);
 		}
 		
+		if(!this.settingConfig.contains("TokenMineWorld")) {
+			this.settingConfig.set("TokenMineWorld", "TokenMine");
+		}
+		
 	}
 	
 	public Config getSettingConfig() {

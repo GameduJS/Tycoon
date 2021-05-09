@@ -21,7 +21,7 @@ import de.tycoon.economy.User;
 import de.tycoon.economy.UserManager;
 import de.tycoon.generators.GeneratorManager;
 import de.tycoon.util.FileUtils;
-import de.tycoon.util.PlayerUtils;
+import de.tycoon.util.BukkitUtils;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -121,7 +121,7 @@ public class ImageCreator implements DiscordCommand{
 			return false;
 		}
 		
-		OfflinePlayer player = PlayerUtils.getOfflinePlayer(args[1]);
+		OfflinePlayer player = BukkitUtils.getOfflinePlayer(args[1]);
 		if(player == null) {
 			textChannel.sendMessage(new EmbedBuilder().setDescription("Hey" + member.getAsMention() + "\nThis player never played before!").setColor(new Color(255, 26, 26)).build()).queue();
 			return false;
