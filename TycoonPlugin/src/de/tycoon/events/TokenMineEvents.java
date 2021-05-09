@@ -8,15 +8,25 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.oracle.jrockit.jfr.EventDefinition;
 
 import de.tycoon.TycoonPlugin;
 import de.tycoon.config.Config;
@@ -61,6 +71,8 @@ public class TokenMineEvents implements Listener{
 		this.loadConfig();
 		
 		this.startBlockReloader();
+		
+		new KeepDayTask().runTaskTimer(plugin, 0, 100);
 	}
 	
 	private void setConfigDefaults() {
@@ -93,6 +105,12 @@ public class TokenMineEvents implements Listener{
 		
 	}
 	
+// Events
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e) {
@@ -100,10 +118,7 @@ public class TokenMineEvents implements Listener{
 		Player player = e.getPlayer();
 		if(!(player.getGameMode() == GameMode.SURVIVAL)) return;
 		
-		if(!configManager.getSettingConfig().contains("TokenMineWorld")) return;
-		
-		
-		if(player.getLocation().getWorld().getName().equalsIgnoreCase(this.configManager.getSettingConfig().getString("TokenMineWorld"))) {
+		if(this.isInTokenMine(player)) {
 			
 			//Check edit mode
 			
@@ -129,6 +144,75 @@ public class TokenMineEvents implements Listener{
 		}
 		
 	}
+	
+	
+	/**
+	 * Let the weather always be sunny
+	 * @param e
+	 */
+	@EventHandler
+	public void onWeatherChange(WeatherChangeEvent e) {
+		if(!isTokenMine(e.getWorld())) return;
+		e.setCancelled(true);
+	}
+	
+	
+	@EventHandler
+	public void onDamage(EntityDamageEvent e) {
+		
+		if(!(e.getEntity() instanceof Player)) return;
+		Player player = (Player) e.getEntity();
+		if(!isInTokenMine(player)) return;
+		
+		e.setCancelled(true);
+	}
+	
+	
+	@EventHandler
+	public void onFall(PlayerMoveEvent e) {
+		Player player = (Player) e.getPlayer();
+		if(!isInTokenMine(player)) return;
+		
+		if(player.getLocation().getY() < 10)
+			player.teleport(Bukkit.getServer().getWorld(configManager.getSettingConfig().getString("TokenMineWorld")).getSpawnLocation());
+	}
+	
+	
+	@EventHandler
+	public void onFoodLose(FoodLevelChangeEvent e) {
+		if(!(e.getEntity() instanceof Player)) return;
+		Player player = (Player) e.getEntity();
+		
+		if(isInTokenMine(player)) {
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					if(player.getFoodLevel() != 20) {
+						player.setFoodLevel(20);
+					}
+				}
+			}.runTask(plugin);
+			
+		}
+	}
+	
+	/**
+	 * Let the time always be day 
+	 */
+	private class KeepDayTask extends BukkitRunnable {
+		@Override
+		public void run() {
+			if(!configManager.getSettingConfig().contains("TokenMineWorld")) return;
+			Bukkit.getServer().getWorld(configManager.getSettingConfig().getString("TokenMineWorld")).setTime(6000);
+		}
+	}
+	
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+/**------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------**/
+	
 	
 	public void startBlockReloader(){
 		this.reloadBlockTask = new BukkitRunnable() {
@@ -164,5 +248,30 @@ public class TokenMineEvents implements Listener{
 		}
 		
 	}
+	
+	private boolean isInTokenMine(Player player) {
+		if(!configManager.getSettingConfig().contains("TokenMineWorld"))
+			return false;
+		if(player.getLocation().getWorld().getName().equalsIgnoreCase(this.configManager.getSettingConfig().getString("TokenMineWorld"))) 
+			return true;
+		return false;
+	}
+	
+	private boolean isTokenMine(World world) {
+		if(!configManager.getSettingConfig().contains("TokenMineWorld"))
+			return false;
+		if(world.getName().equalsIgnoreCase(this.configManager.getSettingConfig().getString("TokenMineWorld")))
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Put into config
+	 * - Reload time
+	 * - Day time should be always day?
+	 * - Day Time
+	 * - Weather should be canceled?
+	 * 
+	 */
 	
 }
