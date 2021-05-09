@@ -37,7 +37,7 @@ public class ShopHandler {
 
 	private void setDefaultSettings() {
 		if (config.contains("ShopSettings"))
-			return;
+			return;	
 	}
 
 	private void buildInventory() {
@@ -52,11 +52,11 @@ public class ShopHandler {
 
 		for (int i = 0; i < totalPages; i++) {
 
-			shopPages[i] = Bukkit.createInventory(null, 6 * 9, "§e§lTYCOON §aShop §7(" + (i + 1) + ")");
+			shopPages[i] = Bukkit.createInventory(null, 1 * 9, "§e§lTYCOON §aShop §7(" + (i + 1) + ")");
 
-			shopPages[i].setItem(53,
+			shopPages[i].setItem(shopPages[i].getSize() - 1,
 					new ItemBuilder(Material.ORANGE_STAINED_GLASS_PANE).setDisplayName("§c§lNext page...").build());
-			shopPages[i].setItem(45,
+			shopPages[i].setItem(shopPages[i].getSize() - 9,
 					new ItemBuilder(Material.ORANGE_STAINED_GLASS_PANE).setDisplayName("§c§lPrevious page...").build());
 
 		}
@@ -92,6 +92,10 @@ public class ShopHandler {
 	
 	public void setEditMode(Player player, boolean b) {
 		this.isEditMode.put(player.getUniqueId(), b);
+	}
+	
+	public ShopItemHandler getShopItemHandler() {
+		return shopItemHandler;
 	}
 
 }
