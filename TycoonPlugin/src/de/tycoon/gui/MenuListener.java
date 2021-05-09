@@ -4,22 +4,30 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.tycoon.TycoonPlugin;
+import de.tycoon.economy.User;
+import de.tycoon.economy.UserManager;
 import de.tycoon.shop.ShopHandler;
+import de.tycoon.shop.ShopItem;
+import de.tycoon.shop.ShopItemHandler;
+import de.tycoon.util.BukkitUtils;
 
 public class MenuListener implements Listener{
 
 	private TycoonPlugin plugin;
 	private ShopHandler shopHandler;
+	private UserManager userManager;
 	
 	private Map<UUID, Integer> currentShopSite;
 	
@@ -28,6 +36,8 @@ public class MenuListener implements Listener{
 	public MenuListener() {
 		this.plugin = TycoonPlugin.get();
 		this.shopHandler = this.plugin.getShopHandler();
+		this.userManager = this.plugin.getUserManager();
+		
 		this.currentShopSite = new HashMap<>();
 		
 		this.shopInventories = this.shopHandler.getShopInventories();
@@ -109,6 +119,49 @@ public class MenuListener implements Listener{
 					player.openInventory(shopInventories[ currentShopSite ] );
 				}
 				
+			}
+			
+			ShopItemHandler shopItemHandler = this.shopHandler.getShopItemHandler();
+			ShopItem shopItem = shopItemHandler.getItemStackByIndex(this.currentShopSite.get(player.getUniqueId()) + 1, e.getSlot());
+			
+			User user = this.userManager.loadUser(player.getUniqueId());
+			
+			if(e.getAction() == InventoryAction.PICKUP_ALL) {
+				if(user.getBalance() < shopItem.getBuyPrice() * 64) return;
+				
+				user.removeMoney(shopItem.getBuyPrice() * 64);
+				
+				ItemStack toGive = null;
+				ItemStack gen = BukkitUtils.getTierOneGeneratorWithShopLore(null, true);
+				
+				if(e.getCurrentItem().getItemMeta().getDisplayName().equals(gen.getItemMeta().getDisplayName())) {
+					toGive = gen;
+				} else {
+					toGive = new ItemStack(shopItem.getItemStack().getType());
+				}
+				
+				toGive.setAmount(64);
+				
+				player.getInventory().addItem(toGive);
+			}
+			
+			if(e.getAction() == InventoryAction.PICKUP_HALF) {
+				if(user.getBalance() < shopItem.getBuyPrice() * 1) return;
+				
+				user.removeMoney(shopItem.getBuyPrice()  * 1);
+				
+				ItemStack toGive = null;
+				ItemStack gen = BukkitUtils.getTierOneGeneratorWithShopLore(null, true);
+				
+				if(e.getCurrentItem().getItemMeta().getDisplayName().equals(gen.getItemMeta().getDisplayName())) {
+					toGive = gen;
+				} else {
+					toGive = new ItemStack(shopItem.getItemStack().getType());
+				}
+				
+				toGive.setAmount(1);
+				
+				player.getInventory().addItem(toGive);
 			}
 			
 			
