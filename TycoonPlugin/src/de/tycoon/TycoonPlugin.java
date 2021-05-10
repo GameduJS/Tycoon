@@ -18,6 +18,7 @@ import de.tycoon.discord.commands.basecommand.CommandListener;
 import de.tycoon.discord.commands.basecommand.DiscordCommandManager;
 import de.tycoon.economy.UserManager;
 import de.tycoon.events.BlockInteract;
+import de.tycoon.events.SellwandListener;
 import de.tycoon.events.StartListener;
 import de.tycoon.events.TokenMineEvents;
 import de.tycoon.generators.GeneratorConfigManager;
@@ -25,6 +26,7 @@ import de.tycoon.generators.GeneratorManager;
 import de.tycoon.gui.MenuListener;
 import de.tycoon.handlers.WorldHandler;
 import de.tycoon.language.LanguageHandler;
+import de.tycoon.sellwand.SellwandManager;
 import de.tycoon.shop.ShopHandler;
 import de.tycoon.shop.ShopItem;
 import de.tycoon.threads.Threads;
@@ -50,6 +52,8 @@ public class TycoonPlugin extends JavaPlugin{
 	private WorldHandler worldHandler;
 	
 	private ShopHandler shopHandler;
+	
+	private SellwandManager sellwandManager;
 	
 	private Threads threads;
 
@@ -86,6 +90,8 @@ public class TycoonPlugin extends JavaPlugin{
 		this.worldHandler.loadWorlds();
 		
 		this.shopHandler = new ShopHandler();
+		
+		this.sellwandManager = new SellwandManager();
 		
 		this.discordCommandManager = new DiscordCommandManager();
 		
@@ -134,6 +140,7 @@ public class TycoonPlugin extends JavaPlugin{
 		this.pluginManager.registerEvents(new BlockInteract(), this);
 		this.pluginManager.registerEvents(new TokenMineEvents(), this);
 		this.pluginManager.registerEvents(new StartListener(), this);
+		this.pluginManager.registerEvents(new SellwandListener(), this);
 	}
 	
 	private void registerDiscordEvents() {
@@ -199,6 +206,11 @@ public class TycoonPlugin extends JavaPlugin{
 	/* WorldHandler Getter */
 	public WorldHandler getWorldHandler() {
 		return worldHandler;
+	}
+	
+	/* SellwandManager Getter */
+	public SellwandManager getSellwandManager() {
+		return sellwandManager;
 	}
 	
 }
