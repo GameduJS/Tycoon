@@ -124,9 +124,11 @@ public class MenuListener implements Listener{
 			ShopItemHandler shopItemHandler = this.shopHandler.getShopItemHandler();
 			ShopItem shopItem = shopItemHandler.getItemStackByIndex(this.currentShopSite.get(player.getUniqueId()) + 1, e.getSlot());
 			
+			if(shopItem == null) return;
+			
 			User user = this.userManager.loadUser(player.getUniqueId());
 			
-			if(e.getAction() == InventoryAction.PICKUP_ALL) {
+			if(e.getAction() == InventoryAction.PICKUP_HALF) {
 				if(user.getBalance() < shopItem.getBuyPrice() * 64) return;
 				
 				user.removeMoney(shopItem.getBuyPrice() * 64);
@@ -145,7 +147,7 @@ public class MenuListener implements Listener{
 				player.getInventory().addItem(toGive);
 			}
 			
-			if(e.getAction() == InventoryAction.PICKUP_HALF) {
+			if(e.getAction() == InventoryAction.PICKUP_ALL) {
 				if(user.getBalance() < shopItem.getBuyPrice() * 1) return;
 				
 				user.removeMoney(shopItem.getBuyPrice()  * 1);
