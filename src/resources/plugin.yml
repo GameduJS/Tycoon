@@ -1,0 +1,13 @@
+name: Tycoon
+main: de.tycoon.TycoonPlugin
+api-version: 1.16
+version: 1.0
+
+commands:
+  eco:
+    aliases: [bal, money]
+  sell:
+  menu:
+  editshopgui:
+  map:
+  
